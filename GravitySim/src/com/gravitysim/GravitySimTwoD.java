@@ -30,7 +30,7 @@ public class GravitySimTwoD implements GLEventListener{
 	private double width = 5000;//width of space
 	private double d = 2*width/3; //width of center square
 	private double G = 6.673e-11;
-	private boolean slow = false;//turn methods on and off
+	private boolean slow = true;//turn methods on and off
 	private boolean normal = true;
 	private boolean collisions = false;
 	
@@ -345,15 +345,8 @@ public class GravitySimTwoD implements GLEventListener{
         if(slow == false){
         	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         }
-        // Prepare to draw text
         textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-
-        // Pulsing colors based on text position, set color in RGBA
-        textRenderer.setColor(0,1,1,1);                                    // Alpha
-
-        // 2D text using int (x, y) coordinates in OpenGL coordinates system,
-        // i.e., (0,0) at the bottom-left corner, instead of Java Graphics coordinates.
-        // x is set to between (+/-)10. y is set to be (+/-)80.
+        textRenderer.setColor(0,1,1,1); 
         double currentTime = timeInt*count;
         String units = " Secs";
         if(currentTime > 60 && currentTime < 3600){
@@ -372,7 +365,7 @@ public class GravitySimTwoD implements GLEventListener{
         }
         textRenderer.draw("Time: "+decFormat.format(currentTime)+units,textPosX, textPosY);
 
-        textRenderer.endRendering();  // finish rendering
+        textRenderer.endRendering();
         for(int j = 0; j<n; j++){
         	x = (2*body[j].currentR[0])/width;
         	y = (2*body[j].currentR[1])/width;
@@ -398,6 +391,27 @@ public class GravitySimTwoD implements GLEventListener{
         double angle = 0;
         GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.setColor(0,1,1,1); 
+        double currentTime = timeInt*count;
+        String units = " Secs";
+        if(currentTime > 60 && currentTime < 3600){
+        	currentTime = currentTime/60;
+        	units = " Mins";
+        	
+        }else if(currentTime > 3600 && currentTime < 86400){
+        	currentTime = currentTime/3600;
+        	units = " Hrs";
+        }else if(currentTime > 86400 && currentTime < 31557600){
+        	currentTime = currentTime/86400;
+        	units = " Days";
+        }else if(currentTime > 31557600){
+        	currentTime = currentTime/31557600;
+        	units = " Yrs";
+        }
+        textRenderer.draw("Time: "+decFormat.format(currentTime)+units,textPosX, textPosY);
+
+        textRenderer.endRendering();
         for(int j = 0; j<n; j++){
         	x = (2*body[j].currentSR[0])/width;
         	y = (2*body[j].currentSR[1])/width;
