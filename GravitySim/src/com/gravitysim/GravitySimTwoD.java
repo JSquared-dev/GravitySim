@@ -28,12 +28,13 @@ public class GravitySimTwoD implements GLEventListener{
 	private double G = 6.673e-11;
 	private boolean slow = true;//turn methods on and off
 	private boolean normal = true;
+	private boolean collisions = false;
 	
 	//Min and max values for random start
 	private double minMass = 1e3;
 	private double maxMass = 1e5;
-	private double minDist = -width/2;
-	private double maxDist = width/2;
+	private double minDist = -width/4;
+	private double maxDist = width/4;
 	private double minVel = 0.01*Math.sqrt(G);
 	private double maxVel = 5*Math.sqrt(G);
 	
@@ -147,16 +148,35 @@ public class GravitySimTwoD implements GLEventListener{
     						rHatMid[0] = body[k].currentR[0]-body[j].currentR[0];
     						rHatMid[1] = body[k].currentR[1]-body[j].currentR[1];
     						modRicm=Math.sqrt(Math.pow(rHatMid[0],2) + Math.pow(rHatMid[1],2));
-    						rHatMid[0] = rHatMid[0]/modRicm;
-    						rHatMid[1] = rHatMid[1]/modRicm;
-    						force = (G*body[j].mass*body[k].mass)/Math.pow(modRicm,2);
-    						totalForce = totalForce + force;
-    						rHat[0] = rHat[0] + rHatMid[0];
-    						rHat[1] = rHat[1] + rHatMid[1];
-    						modRicm = Math.sqrt(Math.pow(rHat[0],2) + Math.pow(rHat[1],2));
-    						if(modRicm != 0){
-    							rHat[0] = rHat[0]/modRicm;
-    							rHat[1] = rHat[1]/modRicm;
+    						if(modRicm<= body[k].radius + body[j].radius && collisions == true){
+    							body[j].mass = body[j].mass + body[k].mass;
+    							body[j].radius = Math.pow((Math.pow(body[j].radius, nDim)+Math.pow(body[k].radius, nDim)), (1.0/nDim));
+    							for(int l = 0; l< nDim; l++){
+    								body[j].currentR[l] = ((body[j].mass * body[j].currentR[l])+(body[k].mass*body[k].currentR[l]))/(body[j].mass + body[k].mass);
+    								body[j].currentV[l] = ((body[j].mass * body[j].currentV[l])+(body[k].mass*body[k].currentV[l]))/(body[j].mass + body[k].mass);
+    							}
+    							for(int l = k; l<n-1 ; l++){
+    								body[l].mass = body[l+1].mass;
+    								body[l].radius = body[l+1].radius;
+    								for(int m = 0; m<nDim; m++){
+    									body[l].currentR[m] = body[l+1].currentR[m];
+    									body[l].currentV[m] = body[l+1].currentV[m];
+    								}
+    							}
+    							n--;
+    							k--;
+    						}else{
+	    						rHatMid[0] = rHatMid[0]/modRicm;
+	    						rHatMid[1] = rHatMid[1]/modRicm;
+	    						force = (G*body[j].mass*body[k].mass)/Math.pow(modRicm,2);
+	    						totalForce = totalForce + force;
+	    						rHat[0] = rHat[0] + rHatMid[0];
+	    						rHat[1] = rHat[1] + rHatMid[1];
+	    						modRicm = Math.sqrt(Math.pow(rHat[0],2) + Math.pow(rHat[1],2));
+	    						if(modRicm != 0){
+	    							rHat[0] = rHat[0]/modRicm;
+	    							rHat[1] = rHat[1]/modRicm;
+	    						}
     						}
     					}else if(body[k].currentR[0] >= body[j].currentR[0] - d  && body[k].currentR[0] <= body[j].currentR[0] + d  && body[k].currentR[1] <= body[j].currentR[1]-d){
        						totalMasses[5] = totalMasses[5]+body[k].mass;
@@ -245,17 +265,38 @@ public class GravitySimTwoD implements GLEventListener{
 						rHatMid[0] = body[k].currentSR[0]-body[j].currentSR[0];
 						rHatMid[1] = body[k].currentSR[1]-body[j].currentSR[1];
 						modDenom=Math.sqrt(Math.pow(rHatMid[0],2) + Math.pow(rHatMid[1],2));
-						rHatMid[0] = rHatMid[0]/modDenom;
-						rHatMid[1] = rHatMid[1]/modDenom;
-						currentForce = (G*body[j].mass*body[k].mass)/Math.pow(modDenom,2);
-						totalForce = totalForce + currentForce;
-						rHatS[0] = rHatS[0] + rHatMid[0];
-						rHatS[1] = rHatS[1] + rHatMid[1];
-						modDenom = Math.sqrt(Math.pow(rHatS[0],2) + Math.pow(rHatS[1],2));
-						if(modDenom != 0){
-							rHatS[0] = rHatS[0]/modDenom;
-							rHatS[1] = rHatS[1]/modDenom;
+						if(modDenom<= body[k].radius + body[j].radius && collisions == true){
+							body[j].mass = body[j].mass + body[k].mass;
+							body[j].radius = Math.pow((Math.pow(body[j].radius, nDim)+Math.pow(body[k].radius, nDim)), (1.0/nDim));
+							for(int l = 0; l< nDim; l++){
+								body[j].currentSR[l] = ((body[j].mass * body[j].currentSR[l])+(body[k].mass*body[k].currentSR[l]))/(body[j].mass + body[k].mass);
+								body[j].currentSV[l] = ((body[j].mass * body[j].currentSV[l])+(body[k].mass*body[k].currentSV[l]))/(body[j].mass + body[k].mass);
+							}
+							for(int l = k; l<n-1 ; l++){
+								body[l].mass = body[l+1].mass;
+								body[l].radius = body[l+1].radius;
+								for(int m = 0; m<nDim; m++){
+									body[l].currentSR[m] = body[l+1].currentSR[m];
+									body[l].currentSV[m] = body[l+1].currentSV[m];
+								}
+							}
+							n--;
+							k--;
+						}else{
+							rHatMid[0] = rHatMid[0]/modDenom;
+							rHatMid[1] = rHatMid[1]/modDenom;
+							currentForce = (G*body[j].mass*body[k].mass)/Math.pow(modDenom,2);
+							totalForce = totalForce + currentForce;
+							rHatS[0] = rHatS[0] + rHatMid[0];
+							rHatS[1] = rHatS[1] + rHatMid[1];
+							modDenom = Math.sqrt(Math.pow(rHatS[0],2) + Math.pow(rHatS[1],2));
+							if(modDenom != 0){
+								rHatS[0] = rHatS[0]/modDenom;
+								rHatS[1] = rHatS[1]/modDenom;
+							}
 						}
+						
+
 					}
 				}
 				//find accel
