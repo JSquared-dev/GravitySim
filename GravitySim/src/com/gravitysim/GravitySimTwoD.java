@@ -328,23 +328,20 @@ public class GravitySimTwoD implements GLEventListener{
         if(slow == false){
         	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         }
-        gl.glBegin(GL.GL_TRIANGLES);
         for(int j = 0; j<n; j++){
         	x = (2*body[j].currentR[0])/width;
         	y = (2*body[j].currentR[1])/width;
         	radius = (2*body[j].radius)/width;
+            gl.glBegin(GL2.GL_POLYGON);
             gl.glColor3f(0,0,1);
 			for(int i =0; i <= 300; i++){
 				angle = 2 * Math.PI * i / 300;
 				q = radius*Math.cos(angle);
 				r = radius*Math.sin(angle);
 				gl.glVertex2d(q+x,r+y);
-				gl.glVertex2d(q+x,0+y);
-				gl.glVertex2d(radius+x,0+y);
 	        }
-	        
+	        gl.glEnd();
         }
-        gl.glEnd();
     }
 
     private void renderSlow(GLAutoDrawable drawable) {
@@ -356,23 +353,20 @@ public class GravitySimTwoD implements GLEventListener{
         double angle = 0;
         GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-        gl.glBegin(GL.GL_TRIANGLES);
         for(int j = 0; j<n; j++){
         	x = (2*body[j].currentSR[0])/width;
         	y = (2*body[j].currentSR[1])/width;
         	radius = (2*body[j].radius)/width;
+        	gl.glBegin(GL2.GL_POLYGON);
             gl.glColor3f(1,0,0);        	
 			for(int i =0; i <= 300; i++){
 				angle = 2 * Math.PI * i / 300;
 				q = radius*Math.cos(angle);
 				r = radius*Math.sin(angle);
 				gl.glVertex2d(q+x,r+y);
-				gl.glVertex2d(q+x,0+y);
-				gl.glVertex2d(radius+x,0+y);
-	        }
-	        
+			}
+			gl.glEnd();
         }
-        gl.glEnd();
     }
 
 }
