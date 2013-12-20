@@ -1,8 +1,11 @@
 package com.gravitysim;
 
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import javax.media.opengl.GL;
@@ -14,6 +17,7 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.awt.TextRenderer;
 
 
 public class GravitySimTwoD implements GLEventListener{
@@ -30,6 +34,11 @@ public class GravitySimTwoD implements GLEventListener{
 	private boolean normal = true;
 	private boolean collisions = false;
 	
+	private TextRenderer textRenderer;
+	private DecimalFormat decFormat = new DecimalFormat("###0.00");
+	private int textPosX; 
+	private int textPosY; 
+	private int count = 0;
 	//Min and max values for random start
 	private double minMass = 1e3;
 	private double maxMass = 1e5;
@@ -81,6 +90,7 @@ public class GravitySimTwoD implements GLEventListener{
 
 	public void display(GLAutoDrawable drawable) {
 	    // make it update and draw
+		count++;
 		if(slow == true){
 			updateSlow();
 			renderSlow(drawable);
@@ -93,6 +103,13 @@ public class GravitySimTwoD implements GLEventListener{
 
 	public void init(GLAutoDrawable drawable) {
 	    //no idea what this is for
+	      textRenderer = new TextRenderer(new Font("SansSerif", Font.PLAIN, 14));
+
+	      Rectangle2D bounds = textRenderer.getBounds("Time: " + "0000.00" + "Secs");
+	      int textWidth = (int)bounds.getWidth();
+	      int textHeight = (int)bounds.getHeight();
+	      textPosX = drawable.getWidth() - textWidth;
+	      textPosY = drawable.getHeight() - textHeight;
 	}
 
 	public void dispose(GLAutoDrawable drawable) {
@@ -328,6 +345,27 @@ public class GravitySimTwoD implements GLEventListener{
         if(slow == false){
         	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         }
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.setColor(0,1,1,1); 
+        double currentTime = timeInt*count;
+        String units = " Secs";
+        if(currentTime > 60 && currentTime < 3600){
+        	currentTime = currentTime/60;
+        	units = " Mins";
+        	
+        }else if(currentTime > 3600 && currentTime < 86400){
+        	currentTime = currentTime/3600;
+        	units = " Hrs";
+        }else if(currentTime > 86400 && currentTime < 31557600){
+        	currentTime = currentTime/86400;
+        	units = " Days";
+        }else if(currentTime > 31557600){
+        	currentTime = currentTime/31557600;
+        	units = " Yrs";
+        }
+        textRenderer.draw("Time: "+decFormat.format(currentTime)+units,textPosX, textPosY);
+
+        textRenderer.endRendering();
         for(int j = 0; j<n; j++){
         	x = (2*body[j].currentR[0])/width;
         	y = (2*body[j].currentR[1])/width;
@@ -353,6 +391,27 @@ public class GravitySimTwoD implements GLEventListener{
         double angle = 0;
         GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        textRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+        textRenderer.setColor(0,1,1,1); 
+        double currentTime = timeInt*count;
+        String units = " Secs";
+        if(currentTime > 60 && currentTime < 3600){
+        	currentTime = currentTime/60;
+        	units = " Mins";
+        	
+        }else if(currentTime > 3600 && currentTime < 86400){
+        	currentTime = currentTime/3600;
+        	units = " Hrs";
+        }else if(currentTime > 86400 && currentTime < 31557600){
+        	currentTime = currentTime/86400;
+        	units = " Days";
+        }else if(currentTime > 31557600){
+        	currentTime = currentTime/31557600;
+        	units = " Yrs";
+        }
+        textRenderer.draw("Time: "+decFormat.format(currentTime)+units,textPosX, textPosY);
+
+        textRenderer.endRendering();
         for(int j = 0; j<n; j++){
         	x = (2*body[j].currentSR[0])/width;
         	y = (2*body[j].currentSR[1])/width;
