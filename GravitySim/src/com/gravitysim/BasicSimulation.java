@@ -5,9 +5,9 @@ public class BasicSimulation extends Simulation {
 
     // Constructors taken care of in Simulation Superclass
 
-    public BasicSimulation() { }
-    public BasicSimulation(Body[] body) { }
-    public BasicSimulation(int n) { }
+    public BasicSimulation() { super(); }
+    public BasicSimulation(Body[] body) { super(body); }
+    public BasicSimulation(int n) { super(n); }
     
     @Override
     void update() {

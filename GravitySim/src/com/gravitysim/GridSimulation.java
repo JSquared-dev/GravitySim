@@ -4,9 +4,9 @@ public class GridSimulation extends Simulation {
 
     // Constructors taken care of in Simulation Superclass
 
-    public GridSimulation() { }
-    public GridSimulation(Body[] body) { }
-    public GridSimulation(int n) { }
+    public GridSimulation() { super(); }
+    public GridSimulation(Body[] body) { super(body); }
+    public GridSimulation(int n) { super(n); }
 
     @Override
     void update() {
