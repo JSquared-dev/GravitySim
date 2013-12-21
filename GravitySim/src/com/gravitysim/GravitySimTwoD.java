@@ -22,15 +22,15 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class GravitySimTwoD implements GLEventListener{
 	
-	public static int n = 1; //number of bodies
+	public static int n = 10; //number of bodies
 	public static int nDim = 2; //number of spatial dimensions
 	public static double timeInt = 60; //time interval, (s)
 	public static int updatesPerRefresh = 50;//how many times it calculates before updating the display
 	public static double density = 3;//5520 = earth
 	public static double width = 5000;//width of space
-	public static double d = 2*width/3; //width of center square
+	public static double d = 2.5*width/3; //width of center square
 	public static final double G = 6.673e-11;
-	public static boolean collisions = true;
+	public static boolean collisions = false;
 	
 	public static TextRenderer textRenderer;
 	public static DecimalFormat decFormat = new DecimalFormat("###0.00");
@@ -50,8 +50,13 @@ public class GravitySimTwoD implements GLEventListener{
 	private GridSimulation gridSim = null;
 
 	public GravitySimTwoD() {
-	    basicSim = new BasicSimulation(n);
-	    gridSim = new GridSimulation(basicSim.body);
+	    body = new Body[n];
+	    for (int i = 0; i < n; i++) {
+	        body[i] = new Body(nDim);
+	        body[i].randomise();
+	    }
+	    gridSim = new GridSimulation(body);
+        basicSim = new BasicSimulation(body);
 	}
 
 	public static void main(String[] args){
