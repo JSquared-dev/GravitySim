@@ -1,9 +1,7 @@
 package com.gravitysim;
 
 import java.awt.Color;
-import java.util.Random;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
@@ -16,16 +14,10 @@ public abstract class Simulation {
     }
     
     public Simulation(int n) {
-        Random rand = new Random();
         body = new Body[n];
         for(int i = 0; i<n; i++){
             body[i] = new Body(GravitySimTwoD.nDim);
-            body[i].mass = GravitySimTwoD.minMass+(GravitySimTwoD.maxMass-GravitySimTwoD.minMass)*rand.nextDouble();
-            body[i].radius = Math.sqrt(body[i].mass/(Math.PI*GravitySimTwoD.density));
-            for(int j = 0; j<GravitySimTwoD.nDim; j++){
-                body[i].currentR[j] = GravitySimTwoD.minDist+(GravitySimTwoD.maxDist-GravitySimTwoD.minDist)*rand.nextDouble();
-                body[i].currentV[j] = GravitySimTwoD.minVel+(GravitySimTwoD.maxVel-GravitySimTwoD.minVel)*rand.nextDouble();
-            }
+            body[i].randomise();
         }
     }
     
@@ -45,13 +37,14 @@ public abstract class Simulation {
         double q = 0;
         double r = 0;
         double angle = 0;
+        int red = colour.getRed(), blue = colour.getBlue(), green = colour.getGreen();
         GL2 gl = drawable.getGL().getGL2();
         for(int j = 0; j<GravitySimTwoD.n; j++){
             x = (2*body[j].currentR[0])/GravitySimTwoD.width;
             y = (2*body[j].currentR[1])/GravitySimTwoD.width;
             radius = (2*body[j].radius)/GravitySimTwoD.width;
             gl.glBegin(GL2.GL_POLYGON);
-            gl.glColor3i(colour.getRed(),colour.getBlue(),colour.getGreen());
+            gl.glColor3d(red/255, green/255, blue/255);
             for(int i =0; i <= 300; i++){
                 angle = 2 * Math.PI * i / 300;
                 q = radius*Math.cos(angle);

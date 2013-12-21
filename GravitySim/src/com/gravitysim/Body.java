@@ -1,6 +1,8 @@
 package com.gravitysim;
 
-public class Body implements Cloneable {
+import java.util.Random;
+
+public class Body {
 	//Arrays to track position and velocity for normal method
 		public double[] currentR;
 		public double[] nextR;
@@ -27,6 +29,7 @@ public class Body implements Cloneable {
 		public Body(Body body) {
 		    // duplicate body into this object.
 	        this.mass = body.mass;
+	        this.radius = body.radius;
 	        this.dim = body.dim;
 	        
 	        //Arrays to track position and velocity for normal method
@@ -39,5 +42,15 @@ public class Body implements Cloneable {
             System.arraycopy(body.nextR, 0, nextR, 0, body.nextR.length);
             System.arraycopy(body.currentV, 0, currentV, 0, body.currentV.length);
             System.arraycopy(body.nextV, 0, nextV, 0, body.nextV.length);
+		}
+		
+		public void randomise() {
+		    Random rand = new Random();
+		    mass = GravitySimTwoD.minMass+(GravitySimTwoD.maxMass-GravitySimTwoD.minMass)*rand.nextDouble();
+            radius = Math.sqrt(mass/(Math.PI*GravitySimTwoD.density));
+            for(int j = 0; j<GravitySimTwoD.nDim; j++){
+                currentR[j] = GravitySimTwoD.minDist+(GravitySimTwoD.maxDist-GravitySimTwoD.minDist)*rand.nextDouble();
+                currentV[j] = GravitySimTwoD.minVel+(GravitySimTwoD.maxVel-GravitySimTwoD.minVel)*rand.nextDouble();
+            }
 		}
 }
