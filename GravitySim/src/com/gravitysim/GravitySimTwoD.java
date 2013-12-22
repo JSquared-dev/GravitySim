@@ -3,6 +3,8 @@ package com.gravitysim;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
@@ -20,7 +22,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 
-public class GravitySimTwoD implements GLEventListener{
+public class GravitySimTwoD implements GLEventListener, KeyListener{
 	
 	public static int n = 10; //number of bodies
 	public static int nDim = 2; //number of spatial dimensions
@@ -45,6 +47,7 @@ public class GravitySimTwoD implements GLEventListener{
 	public static double minVel = 0.01*Math.sqrt(G);
 	public static double maxVel = 5*Math.sqrt(G);
 	
+	private double cameraX, cameraY;
 	private Body[] body = null;
 	private BasicSimulation basicSim = null;
 	private GridSimulation gridSim = null;
@@ -57,6 +60,7 @@ public class GravitySimTwoD implements GLEventListener{
 	    }
 	    gridSim = new GridSimulation(body);
         basicSim = new BasicSimulation(body);
+        cameraX = cameraY = 0;
 	}
 
 	public static void main(String[] args){
@@ -68,7 +72,9 @@ public class GravitySimTwoD implements GLEventListener{
 		frame.setSize(700,700);
 		frame.add(canvas);
 		frame.setVisible(true);  
-		canvas.addGLEventListener(new GravitySimTwoD()); 
+		GravitySimTwoD gravSim = new GravitySimTwoD();
+		canvas.addGLEventListener(gravSim);
+		canvas.addKeyListener(gravSim);
 		FPSAnimator animator = new FPSAnimator(canvas, 60);
 		animator.start();
 		frame.addWindowListener(new WindowAdapter() {
@@ -105,6 +111,8 @@ public class GravitySimTwoD implements GLEventListener{
         GravitySimTwoD.textRenderer.draw("Time: "+GravitySimTwoD.decFormat.format(currentTime)+units,GravitySimTwoD.textPosX, GravitySimTwoD.textPosY);
 
         GravitySimTwoD.textRenderer.endRendering();
+        gl.glPushMatrix();
+        gl.glTranslated(cameraX, cameraY, 0);
         try {
             if(basicSim != null){
                 basicSim.simCount.acquire();
@@ -118,6 +126,7 @@ public class GravitySimTwoD implements GLEventListener{
         catch (InterruptedException e) {
             e.printStackTrace();
         }
+        gl.glPopMatrix();
 		gl.glFlush();
 	}
 
@@ -139,6 +148,36 @@ public class GravitySimTwoD implements GLEventListener{
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 	    //should probably work this out too
 	}
+
+    @Override
+    public void keyPressed(KeyEvent event) {
+        // camera movements are inverted - we move the world, not the camera
+        char key = event.getKeyChar();
+        if (key == 'a') {
+            cameraX += 0.1;
+        }
+        else if (key == 'd') {
+            cameraX -= 0.1;
+        }
+        else if (key == 'w') {
+            cameraY -= 0.1;
+        }
+        else if (key == 's') {
+            cameraY += 0.1;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent event) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void keyTyped(KeyEvent event) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }
 
