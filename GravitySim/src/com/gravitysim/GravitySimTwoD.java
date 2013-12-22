@@ -24,15 +24,16 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class GravitySimTwoD implements GLEventListener, KeyListener{
 	
-	public static int n = 10; //number of bodies
+	public static int n = 5; //number of bodies
 	public static int nDim = 2; //number of spatial dimensions
 	public static double timeInt = 60; //time interval, (s)
 	public static int updatesPerRefresh = 50;//how many times it calculates before updating the display
 	public static double density = 3;//5520 = earth
 	public static double width = 5000;//width of space
-	public static double d = 2.5*width/3; //width of center square
+	public static double d = 0.6*width; //width of center square
 	public static final double G = 6.673e-11;
 	public static boolean collisions = false;
+    public static int numLines = 10;//number of lines added on each side of the grid method
 	
 	public static TextRenderer textRenderer;
 	public static DecimalFormat decFormat = new DecimalFormat("###0.00");
@@ -51,7 +52,6 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
 	private Body[] body = null;
 	private BasicSimulation basicSim = null;
 	private GridSimulation gridSim = null;
-	private GridSimulationRevised gridSimRevised = null;
 	
 	public GravitySimTwoD() {
 	    body = new Body[n];
@@ -61,7 +61,6 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
 	    }
 	    gridSim = new GridSimulation(body);
         basicSim = new BasicSimulation(body);
-        gridSimRevised = new GridSimulationRevised(body);
         cameraX = cameraY = 0;
 	}
 
@@ -123,10 +122,6 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
             if(gridSim != null){
                 gridSim.simCount.acquire();
                 gridSim.render(drawable, new Color(0,0,255));
-            }
-            if(gridSimRevised != null){
-                gridSimRevised.simCount.acquire();
-                gridSimRevised.render(drawable, new Color(0,255,0));
             }
         }
         catch (InterruptedException e) {

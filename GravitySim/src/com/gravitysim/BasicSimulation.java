@@ -11,7 +11,6 @@ public class BasicSimulation extends Simulation {
     
     @Override
     void update() {
-
         double[] rHatMid = new double[2];
         double[] rHatS = new double[2];
         double totalForce = 0;

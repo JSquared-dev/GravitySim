@@ -7,24 +7,31 @@ public class GridSimulation extends Simulation {
     public GridSimulation() { super(); }
     public GridSimulation(Body[] body) { super(body); }
     public GridSimulation(int n) { super(n); }
-
+    
+    private int numPerRow = (2*GravitySimTwoD.numLines) + 1;
+    private int numGrid = (int) Math.pow(numPerRow, 2);
+    private int midPoint = (numGrid - 1)/2;
+    private int currentGridPos;
+    double[] totalMasses = new double[numGrid];
+    double[][] cmPositions = new double[numGrid][GravitySimTwoD.nDim];
+    
+    
     @Override
     void update() {
-
         double force = 0;
         double accel = 0;
         double modRicm = 0;
         double[] rHat = new double[GravitySimTwoD.nDim];
-        double[] totalMasses = new double[(int) Math.pow(3, GravitySimTwoD.nDim)];
-        double[][] cmPositions = new double[(int) Math.pow(3, GravitySimTwoD.nDim)][GravitySimTwoD.nDim];
         double[] rHatMid = new double[2];
         double totalForce = 0;
+        int sectionX = 0;
+        int sectionY = 0;
         for(int z = 0; z<GravitySimTwoD.updatesPerRefresh; z++){
             for(int j = 0; j<GravitySimTwoD.n; j++){
                 totalForce = 0;
                 rHat[0] = 0;
                 rHat[1] = 0;
-                for(int k = 0; k<9; k++){
+                for(int k = 0; k<numGrid; k++){
                     totalMasses[k] = 0;
                     for(int l = 0; l<GravitySimTwoD.nDim; l++){
                         cmPositions[k][l] = 0;
@@ -33,34 +40,24 @@ public class GridSimulation extends Simulation {
                 for(int k = 0; k<GravitySimTwoD.n; k++){
                     if(j != k){//if its not the considered particle....
                         //find which section it goes in
-                        if(body[k].currentR[0] <= body[j].currentR[0] - GravitySimTwoD.d  
-                                && body[k].currentR[1] >= body[j].currentR[1]+GravitySimTwoD.d){
-                            totalMasses[0] = totalMasses[0]+body[k].mass;
-                            cmPositions[0][0] = cmPositions[0][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[0][1] = cmPositions[0][1] + body[k].mass*body[k].currentR[1];
-                            
-                        }else if(body[k].currentR[0] <= body[j].currentR[0] - GravitySimTwoD.d  
-                                && body[k].currentR[1] >= body[j].currentR[1]-GravitySimTwoD.d 
-                                && body[k].currentR[1] <= body[j].currentR[1]+GravitySimTwoD.d){
-                            totalMasses[1] = totalMasses[1]+body[k].mass;
-                            cmPositions[1][0] = cmPositions[1][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[1][1] = cmPositions[1][1] + body[k].mass*body[k].currentR[1];
-                        }else if(body[k].currentR[0] <= body[j].currentR[0] - GravitySimTwoD.d  
-                                && body[k].currentR[1] <= body[j].currentR[1]-GravitySimTwoD.d){
-                            totalMasses[2] = totalMasses[2]+body[k].mass;
-                            cmPositions[2][0] = cmPositions[2][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[2][1] = cmPositions[2][1] + body[k].mass*body[k].currentR[1];
-                        }else if(body[k].currentR[0] >= body[j].currentR[0] - GravitySimTwoD.d  
-                                && body[k].currentR[0] <= body[j].currentR[0] + GravitySimTwoD.d  
-                                && body[k].currentR[1] >= body[j].currentR[1]+GravitySimTwoD.d){
-                            totalMasses[3] = totalMasses[3]+body[k].mass;
-                            cmPositions[3][0] = cmPositions[3][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[3][1] = cmPositions[3][1] + body[k].mass*body[k].currentR[1];
-                        }else if(body[k].currentR[0] >= body[j].currentR[0] - GravitySimTwoD.d  
-                                && body[k].currentR[0] <= body[j].currentR[0] + GravitySimTwoD.d  
-                                && body[k].currentR[1] >= body[j].currentR[1]-GravitySimTwoD.d 
-                                && body[k].currentR[1] <= body[j].currentR[1]+GravitySimTwoD.d){
-                            //center point with observed particle
+                    	currentGridPos = midPoint;
+                    	sectionX = (int) ((body[k].currentR[0] - body[j].currentR[0])/GravitySimTwoD.d);
+                    	sectionY = (int) ((body[k].currentR[1] - body[j].currentR[1])/GravitySimTwoD.d);
+                    	if(sectionX > GravitySimTwoD.numLines){
+                    		sectionX = GravitySimTwoD.numLines;
+                    	}else if(sectionX < -GravitySimTwoD.numLines){
+                    		sectionX = -GravitySimTwoD.numLines;
+                    	}
+                    	if(sectionY > GravitySimTwoD.numLines){
+                    		sectionY = GravitySimTwoD.numLines;
+                    	}else if(sectionY < -GravitySimTwoD.numLines){
+                    		sectionY = -GravitySimTwoD.numLines;
+                    	}
+                    	currentGridPos+= sectionX;
+                    	currentGridPos+= sectionY*numPerRow;
+                    	//System.out.println(currentGridPos);
+                    	
+                    	if(currentGridPos == midPoint){
                             rHatMid[0] = body[k].currentR[0]-body[j].currentR[0];
                             rHatMid[1] = body[k].currentR[1]-body[j].currentR[1];
                             modRicm=Math.sqrt(Math.pow(rHatMid[0],2) + Math.pow(rHatMid[1],2));
@@ -94,36 +91,20 @@ public class GridSimulation extends Simulation {
                                     rHat[1] = rHat[1]/modRicm;
                                 }
                             }
-                        }else if(body[k].currentR[0] >= body[j].currentR[0] - GravitySimTwoD.d  && body[k].currentR[0] <= body[j].currentR[0] + GravitySimTwoD.d  && body[k].currentR[1] <= body[j].currentR[1]-GravitySimTwoD.d){
-                            totalMasses[5] = totalMasses[5]+body[k].mass;
-                            cmPositions[5][0] = cmPositions[5][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[5][1] = cmPositions[5][1] + body[k].mass*body[k].currentR[1];
-                        }else if(body[k].currentR[0] >= body[j].currentR[0] + GravitySimTwoD.d  && body[k].currentR[1] >= body[j].currentR[1]+GravitySimTwoD.d){
-                            totalMasses[6] = totalMasses[6]+body[k].mass;
-                            cmPositions[6][0] = cmPositions[6][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[6][1] = cmPositions[6][1] + body[k].mass*body[k].currentR[1];
-                        }else if(body[k].currentR[0] >= body[j].currentR[0] + GravitySimTwoD.d  && body[k].currentR[1] >= body[j].currentR[1]-GravitySimTwoD.d && body[k].currentR[1] <= body[j].currentR[1]+GravitySimTwoD.d){
-                            totalMasses[7] = totalMasses[7]+body[k].mass;
-                            cmPositions[7][0] = cmPositions[7][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[7][1] = cmPositions[7][1] + body[k].mass*body[k].currentR[1];
-                        }else if(body[k].currentR[0] >= body[j].currentR[0] + GravitySimTwoD.d  && body[k].currentR[1] <= body[j].currentR[1]-GravitySimTwoD.d){
-                            totalMasses[8] = totalMasses[8]+body[k].mass;
-                            cmPositions[8][0] = cmPositions[8][0] + body[k].mass*body[k].currentR[0];
-                            cmPositions[8][1] = cmPositions[8][1] + body[k].mass*body[k].currentR[1];
-                        }else{
-                            System.out.println("Uh oh!");
-                        }   
+                    	}else{
+                            totalMasses[currentGridPos] = totalMasses[currentGridPos]+body[k].mass;
+                            cmPositions[currentGridPos][0] = cmPositions[currentGridPos][0] + body[k].mass*body[k].currentR[0];
+                            cmPositions[currentGridPos][1] = cmPositions[currentGridPos][1] + body[k].mass*body[k].currentR[1];
+                    	}
+                    	  
                     }
                 }
                 //deal with COMs
-                for(int l = 0; l<(int) Math.pow(3, GravitySimTwoD.nDim); l++){
-                    if(l != (((int)Math.pow(3, GravitySimTwoD.nDim)+1)/2)){
-                        if(cmPositions[l][0] != 0 && cmPositions[l][1] != 0){
+                for(int l = 0; l<numGrid; l++){
+                    if(l != midPoint){
+                        if(totalMasses[l] != 0){
                             for(int m = 0; m<GravitySimTwoD.nDim; m++){
-                                if(totalMasses[l] != 0){
-                                    cmPositions[l][m] = cmPositions[l][m]/totalMasses[l];
-                                }
-                                
+                                cmPositions[l][m] = cmPositions[l][m]/totalMasses[l];                            
                             }
                             rHatMid[0] = cmPositions[l][0]-body[j].currentR[0];
                             rHatMid[1] = cmPositions[l][1]-body[j].currentR[1];
