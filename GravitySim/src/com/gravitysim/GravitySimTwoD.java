@@ -24,15 +24,15 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class GravitySimTwoD implements GLEventListener, KeyListener{
 	
-	public static int n = 10; //number of bodies
+    private static int n = 10;
 	public static int nDim = 2; //number of spatial dimensions
 	public static double timeInt = 60; //time interval, (s)
 	public static int updatesPerRefresh = 50;//how many times it calculates before updating the display
-	public static double density = 3;//5520 = earth
-	public static double width = 5000;//width of space
+	public static double density = 520;//5520 = earth
+	public static double width = 2000;//width of space
 	public static double d = 2.5*width/3; //width of center square
 	public static final double G = 6.673e-11;
-	public static boolean collisions = false;
+	public static boolean collisions = true;
 	
 	public static TextRenderer textRenderer;
 	public static DecimalFormat decFormat = new DecimalFormat("###0.00");

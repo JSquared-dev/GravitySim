@@ -19,11 +19,11 @@ public class BasicSimulation extends Simulation {
         double modDenom = 0;
         double currentForce = 0;
         for(int z = 0; z<GravitySimTwoD.updatesPerRefresh; z++){
-            for(int j = 0; j<GravitySimTwoD.n; j++){
+            for(int j = 0; j<n; j++){
                 totalForce = 0;
                 rHatS[0] = 0;
                 rHatS[1] = 0;
-                for(int k = 0; k< GravitySimTwoD.n;k++){
+                for(int k = 0; k< n;k++){
                     if(j != k){
                         //calc force between
                         rHatMid[0] = body[k].currentR[0]-body[j].currentR[0];
@@ -36,7 +36,7 @@ public class BasicSimulation extends Simulation {
                                 body[j].currentR[l] = ((body[j].mass * body[j].currentR[l])+(body[k].mass*body[k].currentR[l]))/(body[j].mass + body[k].mass);
                                 body[j].currentV[l] = ((body[j].mass * body[j].currentV[l])+(body[k].mass*body[k].currentV[l]))/(body[j].mass + body[k].mass);
                             }
-                            for(int l = k; l<GravitySimTwoD.n-1 ; l++){
+                            for(int l = k; l<n-1 ; l++){
                                 body[l].mass = body[l+1].mass;
                                 body[l].radius = body[l+1].radius;
                                 for(int m = 0; m<GravitySimTwoD.nDim; m++){
@@ -44,7 +44,7 @@ public class BasicSimulation extends Simulation {
                                     body[l].currentV[m] = body[l+1].currentV[m];
                                 }
                             }
-                            GravitySimTwoD.n--;
+                            n--;
                             k--;
                         }else{
                             rHatMid[0] = rHatMid[0]/modDenom;
@@ -72,7 +72,7 @@ public class BasicSimulation extends Simulation {
                 }
             }
             //update the array
-            for(int j = 0; j<GravitySimTwoD.n; j++){
+            for(int j = 0; j<n; j++){
                 for(int k = 0; k<GravitySimTwoD.nDim; k++){
                     body[j].currentV[k] = body[j].nextV[k];
                     body[j].currentR[k] = body[j].nextR[k];

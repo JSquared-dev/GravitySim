@@ -11,12 +11,14 @@ public abstract class Simulation implements Runnable {
     public Body[] body;
     public Semaphore simCount;
     public Thread simulationThread;
-    
+    public int n; //number of bodies
+
     public Simulation() {
-        this(GravitySimTwoD.n);
+        this(10); // make 10 random bodies by default
     }
     
-    public Simulation(int n) {
+    public Simulation(int nBodies) {
+        n = nBodies;
         simCount = new Semaphore(5);
         body = new Body[n];
         for(int i = 0; i<n; i++){
@@ -28,9 +30,10 @@ public abstract class Simulation implements Runnable {
     }
     
     public Simulation(Body[] toDupe) {
+        n = toDupe.length;
         simCount = new Semaphore(5);
-        this.body = new Body[toDupe.length];
-        for (int i = 0; i < toDupe.length; i++) {
+        this.body = new Body[n];
+        for (int i = 0; i < n; i++) {
             body[i] = new Body(toDupe[i]);
         }
         simulationThread = new Thread(null, this, "simulation");
@@ -48,7 +51,7 @@ public abstract class Simulation implements Runnable {
         double angle = 0;
         int red = colour.getRed(), blue = colour.getBlue(), green = colour.getGreen();
         GL2 gl = drawable.getGL().getGL2();
-        for(int j = 0; j<GravitySimTwoD.n; j++){
+        for(int j = 0; j<n; j++){
             x = (2*body[j].currentR[0])/GravitySimTwoD.width;
             y = (2*body[j].currentR[1])/GravitySimTwoD.width;
             radius = (2*body[j].radius)/GravitySimTwoD.width;
