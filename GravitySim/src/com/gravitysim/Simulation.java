@@ -1,31 +1,40 @@
 package com.gravitysim;
 
 import java.awt.Color;
+import java.util.concurrent.Semaphore;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
-public abstract class Simulation {
+public abstract class Simulation implements Runnable {
 
     public Body[] body;
+    public Semaphore simCount;
+    public Thread simulationThread;
     
     public Simulation() {
         this(GravitySimTwoD.n);
     }
     
     public Simulation(int n) {
+        simCount = new Semaphore(5);
         body = new Body[n];
         for(int i = 0; i<n; i++){
             body[i] = new Body(GravitySimTwoD.nDim);
             body[i].randomise();
         }
+        simulationThread = new Thread(null, this, "simulation");
+        simulationThread.start();
     }
     
     public Simulation(Body[] toDupe) {
+        simCount = new Semaphore(5);
         this.body = new Body[toDupe.length];
         for (int i = 0; i < toDupe.length; i++) {
             body[i] = new Body(toDupe[i]);
         }
+        simulationThread = new Thread(null, this, "simulation");
+        simulationThread.start();
     }
     
     abstract void update();
@@ -52,6 +61,15 @@ public abstract class Simulation {
                 gl.glVertex2d(q+x,r+y);
             }
             gl.glEnd();
+        }
+    }
+    
+    public void run() {
+        while (true) {
+            while (simCount.availablePermits() < 5) {
+                update();
+                simCount.release();
+            }
         }
     }
     

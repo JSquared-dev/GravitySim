@@ -105,14 +105,19 @@ public class GravitySimTwoD implements GLEventListener{
         GravitySimTwoD.textRenderer.draw("Time: "+GravitySimTwoD.decFormat.format(currentTime)+units,GravitySimTwoD.textPosX, GravitySimTwoD.textPosY);
 
         GravitySimTwoD.textRenderer.endRendering();
-		if(basicSim != null){
-			basicSim.update();
-			basicSim.render(drawable, new Color(255, 0, 0));
-		}
-		if(gridSim != null){
-			gridSim.update();
-			gridSim.render(drawable, new Color(0,0,255));
-		}
+        try {
+            if(basicSim != null){
+                basicSim.simCount.acquire();
+                basicSim.render(drawable, new Color(255, 0, 0));
+            }
+            if(gridSim != null){
+                gridSim.simCount.acquire();
+                gridSim.render(drawable, new Color(0,0,255));
+            }
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 		gl.glFlush();
 	}
 
