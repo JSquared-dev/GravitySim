@@ -1,12 +1,12 @@
 package com.gravitysim;
 
-public class GridSimulation extends Simulation {
+public class GridSimulationRevised extends Simulation {
 
     // Constructors taken care of in Simulation Superclass
 
-    public GridSimulation() { super(); }
-    public GridSimulation(Body[] body) { super(body); }
-    public GridSimulation(int n) { super(n); }
+    public GridSimulationRevised() { super(); }
+    public GridSimulationRevised(Body[] body) { super(body); }
+    public GridSimulationRevised(int n) { super(n); }
 
     @Override
     void update() {
@@ -84,7 +84,7 @@ public class GridSimulation extends Simulation {
                             }else{
                                 rHatMid[0] = rHatMid[0]/modRicm;
                                 rHatMid[1] = rHatMid[1]/modRicm;
-                                force = (GravitySimTwoD.G*body[j].mass*body[k].mass)/Math.pow(modRicm,2);
+                                force = (GravitySimTwoD.G*2*body[j].mass*body[k].mass)/Math.pow(modRicm,2);
                                 totalForce = totalForce + force;
                                 rHat[0] = rHat[0] + rHatMid[0];
                                 rHat[1] = rHat[1] + rHatMid[1];

@@ -51,7 +51,8 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
 	private Body[] body = null;
 	private BasicSimulation basicSim = null;
 	private GridSimulation gridSim = null;
-
+	private GridSimulationRevised gridSimRevised = null;
+	
 	public GravitySimTwoD() {
 	    body = new Body[n];
 	    for (int i = 0; i < n; i++) {
@@ -60,6 +61,7 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
 	    }
 	    gridSim = new GridSimulation(body);
         basicSim = new BasicSimulation(body);
+        gridSimRevised = new GridSimulationRevised(body);
         cameraX = cameraY = 0;
 	}
 
@@ -121,6 +123,10 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
             if(gridSim != null){
                 gridSim.simCount.acquire();
                 gridSim.render(drawable, new Color(0,0,255));
+            }
+            if(gridSimRevised != null){
+                gridSimRevised.simCount.acquire();
+                gridSimRevised.render(drawable, new Color(0,255,0));
             }
         }
         catch (InterruptedException e) {
