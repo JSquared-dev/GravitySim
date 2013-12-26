@@ -24,7 +24,7 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class GravitySimTwoD implements GLEventListener, KeyListener{
 	
-	public static int n = 5; //number of bodies
+	public static int n = 15; //number of bodies
 	public static int nDim = 2; //number of spatial dimensions
 	public static double timeInt = 60; //time interval, (s)
 	public static int updatesPerRefresh = 50;//how many times it calculates before updating the display
@@ -32,7 +32,7 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
 	public static double width = 5000;//width of space
 	public static double d = 0.6*width; //width of center square
 	public static final double G = 6.673e-11;
-	public static boolean collisions = false;
+	public static boolean collisions = true;
     public static int numLines = 10;//number of lines added on each side of the grid method
 	
 	public static TextRenderer textRenderer;
@@ -165,6 +165,12 @@ public class GravitySimTwoD implements GLEventListener, KeyListener{
         }
         else if (key == 's') {
             cameraY += 0.1;
+        }
+        else if (key == 'q') {
+            width = 0.9*width;
+        }
+        else if (key == 'e') {
+            width = 1.1*width;
         }
     }
 
